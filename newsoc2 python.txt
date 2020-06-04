@@ -1,0 +1,28 @@
+import time, socket
+
+print('client server 2')
+time.sleep(1)
+soc = socket.socket()
+c2 = socket.socket()
+
+shost = socket.gethostname()
+
+ip2 = socket.gethostbyname_ex(shost)
+print(shost, '({})'.format(ip2))
+
+server_host1 = input('Enter server IP address: ')
+name2 = input('client name: ')
+port = 9999
+print('Trying to connect the server')
+time.sleep(0.5)
+print(c2.connect((server_host1, port)))
+print('connected')
+
+c2.send(name2.encode())
+server_name = c2.recv(1024).decode()
+print('{} has joined.....'.format(server_name))
+
+while True:
+    print(c2.recv(1024).decode())
+    message = input('Enter')
+    c2.send(bytes(message, 'utf-8'))

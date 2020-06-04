@@ -66,3 +66,49 @@ t2.start()
 
 t1.join()
 t2.join()
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+# New and approved and improves server program
+
+import socket, time
+from _thread import start_new_thread
+from os import remove
+
+s = socket.socket()
+
+host_name1 = socket.gethostname()
+ip = socket.gethostbyname_ex(host_name1)
+print(ip)
+
+s.bind((host_name1, 9999))
+print(host_name1, '({})'.format(ip))
+
+n = 100
+s.listen(n)
+
+name = input("Enter the server name: ")
+list_clients = []
+
+def client_thread(conn, addr):
+
+    conn.send(bytes("Welcome to this chat room", 'utf-8'))
+
+    while True:
+        try:
+            message = conn.recv(1024).decode()
+
+            if message:
+                print("<" + addr[0] + ">" + message)
+                message_to_send = "<" + addr[0] + "> " + message
+                for clients in list_clients:
+                    clients.send(bytes(message_to_send, 'utf-8'))
+            else:
+                remove(conn)
+        except:
+            continue
+
+while True:
+    conn, addr = s.accept()
+    list_clients.append(conn)
+    print(addr[0]+ "connected")
+    start_new_thread(client_thread, (conn, addr))
