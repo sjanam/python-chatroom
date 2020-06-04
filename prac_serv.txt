@@ -1,0 +1,68 @@
+s = socket.socket()
+
+host_name1 = socket.gethostname()
+ip = socket.gethostbyname_ex(host_name1)
+print(ip)
+
+s.bind((host_name1, 9999))
+print(host_name1, '({})'.format(ip))
+name = input("Enter the server name: ")
+c = ['c1', 'c2', 'c3', 'c4']
+address = ['address1', 'address2', 'address3', 'address4']
+
+n = int(input("Enter no. of clients to be connected"))
+
+class A(Thread):
+
+    while (n):
+        s.listen(n)
+    print('Waiting for connections....')
+    time.sleep(0.5)
+
+    for i in range(len(c)):
+        c[i], address[i] = s.accept()
+        print(c[i], address[i])
+        print(c[i].recv(1024).decode())
+    """
+    c1, address1 = s.accept()
+    print(c1, address1)
+    print(c1.recv(1024).decode())
+
+    c2, address2 = s.accept()
+    print(c2, address2)
+    print(c2.recv(1024).decode())
+
+    c3, address3 = s.accept()
+    print(c3, address3)
+    print(c3.recv(1024).decode())
+
+    c4, address4 = s.accept()
+    print(c4, address4)
+    print(c4.recv(1024).decode())
+"""
+class B(Thread):
+
+    while True:
+        for a in range(len(c)):
+            message = c[a].recv(1024).decode()
+            print(message)
+
+            for b in range(len(c)):
+                if len(c[b+1]) < n:
+                    c[b+1].send(message.encode())
+                else:
+                    break
+    c1.close()
+    c2.close()
+    c3.close()
+    c4.close()
+
+t1 = A()
+t2 = B()
+
+t1.start()
+time.sleep(120)
+t2.start()
+
+t1.join()
+t2.join()
